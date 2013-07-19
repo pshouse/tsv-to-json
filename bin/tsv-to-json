@@ -11,6 +11,7 @@ var fs = require('fs'),
     mkdirp = require('mkdirp'),
     http = require('http'),
     byline = require('byline'),
+    LineByLineReader = require('line-by-line'),
     print = console.log;
 
 var source = process.argv[2],
@@ -30,21 +31,24 @@ if (source.match(/^https?:\/\//))
   http.request(source, processStream).end();
 // Open a file stream otherwise
 else
-  processStream(fs.createReadStream(source));
+  processStream(source);
 
 /* Process the specified input stream */
-function processStream(inputStream) {
+function processStream(input) {
   // Process data by line as long as there is a processor
-  input = byline.createStream(inputStream);
-  input.on('data', function (line) {
+  var lr = new LineByLineReader(input);
+  // = byline.createStream(inputStream);
+  lr.on('line', function (line) {
     lineCount++;
     if (processor)
       processor(String(line));
     else
-      inputStream.destroy();
+      //inputStream.destroy();
+      lr.destroy();
   })
   .on('end', function () {
-    print('Converted ' + recordCount + ' records to JSON files in ' + destination);
+    print('Converted ' + recordCount + ' records to JSON files in ' + destinatio
+n);
   });
 }
 
@@ -76,6 +80,8 @@ function processRecord(line) {
   // Determine record ID
   var id = fields[0];
   if (!id.match(/^\d+$/)) {
+  var id = fields[0];
+  if (!id.match(/^\d+$/)) {
     die('Expected row identifier to be numeric, ' +
         'but got "' + id + '" at line ' + lineCount);
   }
@@ -98,14 +104,14 @@ function processRecord(line) {
   recordCount++;
 
   // Create file in directory, and pause input while doing so
-  input.pause();
+  //input.pause();
   var dirName = path.dirname(fileName);
   mkdirp(dirName, function (err) {
     if (err) die(err);
     fs.writeFile(fileName, JSON.stringify(record), function (err) {
       if (err) die(err);
       // Resume input
-      input.resume();
+      //input.resume();
     });
   });
 }
