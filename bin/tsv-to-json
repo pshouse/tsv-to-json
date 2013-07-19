@@ -10,7 +10,6 @@ var fs = require('fs'),
     path = require('path'),
     mkdirp = require('mkdirp'),
     http = require('http'),
-    byline = require('byline'),
     LineByLineReader = require('line-by-line'),
     print = console.log;
 
@@ -47,8 +46,7 @@ function processStream(input) {
       lr.destroy();
   })
   .on('end', function () {
-    print('Converted ' + recordCount + ' records to JSON files in ' + destinatio
-n);
+    print('Converted ' + recordCount + ' records to JSON files in ' + destination);
   });
 }
 
@@ -78,8 +76,6 @@ function processRecord(line) {
     return;
 
   // Determine record ID
-  var id = fields[0];
-  if (!id.match(/^\d+$/)) {
   var id = fields[0];
   if (!id.match(/^\d+$/)) {
     die('Expected row identifier to be numeric, ' +
