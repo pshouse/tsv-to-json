@@ -35,7 +35,8 @@ else
 /* Process the specified input stream */
 function processStream(inputStream) {
   // Process data by line as long as there is a processor
-  input = byline(inputStream).on('data', function (line) {
+  input = byline.createStream(inputStream);
+  input.on('data', function (line) {
     lineCount++;
     if (processor)
       processor(String(line));
