@@ -38,7 +38,7 @@ function processStream(inputStream) {
   input = byline(inputStream).on('data', function (line) {
     lineCount++;
     if (processor)
-      processor(line);
+      processor(String(line));
     else
       inputStream.destroy();
   })
